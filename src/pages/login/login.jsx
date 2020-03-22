@@ -6,7 +6,7 @@ import memoryUtils from '../../utils/memoryUtils';
 import storageUtils from '../../utils/storageUtils';
 
 import './login.css'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 import { Redirect } from 'react-router-dom';
 const Item = Form.Item
 
