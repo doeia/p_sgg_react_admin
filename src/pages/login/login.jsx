@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
-import { Form, Input, Icon, Button } from 'antd';
+import { Form, Input, Icon, Button, message } from 'antd';
 // import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { reqLogin } from '../../api';
+import memoryUtils from '../../utils/memoryUtils';
+import storageUtils from '../../utils/storageUtils';
 
 import './login.css'
 import logo from './images/logo.png'
+import { Redirect } from 'react-router-dom';
 const Item = Form.Item
 
 class Login extends Component {
-
     /*
     登陆
     */
@@ -17,12 +20,24 @@ class Login extends Component {
         // 进行表单所有控件的校验
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                // 校验成功
+                // 校验成功, 解构参数
                 const { username, password } = values
-                console.log('提交登陆请求', username, password)
+                const result = await reqLogin(username, password)
+                if (result.status === 0) {
+
+                    message.success('登录成功')
+
+                    const user = result.data
+                    storageUtils.saveUser(user)
+                    memoryUtils.user = result.data
+
+                    this.props.history.replace('/')
+                } else {
+                    message.error(result.msg)
+                }
             } else {
                 // 校验失败
-                console.log(err)
+                console.log('检验失败')
             }
         })
     }
@@ -49,6 +64,10 @@ class Login extends Component {
     }
 
     render() {
+        const user = memoryUtils.user
+        if (user && user._id) {
+            return <Redirect to='/'></Redirect>
+        }
         const form = this.props.form
         const { getFieldDecorator } = form
 
